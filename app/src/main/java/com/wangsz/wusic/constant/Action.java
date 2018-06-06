@@ -1,4 +1,4 @@
-package com.wangsz.musicservice.constant;
+package com.wangsz.wusic.constant;
 
 /**
  * author: wangsz

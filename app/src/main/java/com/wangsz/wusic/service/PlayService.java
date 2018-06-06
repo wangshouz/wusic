@@ -1,4 +1,4 @@
-package com.wangsz.musicservice.service;
+package com.wangsz.wusic.service;
 
 import android.app.Service;
 import android.content.Intent;

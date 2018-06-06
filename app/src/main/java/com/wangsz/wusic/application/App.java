@@ -2,7 +2,7 @@ package com.wangsz.wusic.application;
 
 import android.app.Application;
 
-import com.wangsz.musicservice.MusicServiceManager;
+import com.wangsz.wusic.manager.MusicServiceManager;
 
 
 /**

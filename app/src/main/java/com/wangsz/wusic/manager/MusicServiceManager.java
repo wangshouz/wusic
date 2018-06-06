@@ -1,4 +1,4 @@
-package com.wangsz.musicservice;
+package com.wangsz.wusic.manager;
 
 import android.app.ActivityManager;
 import android.content.ComponentName;
@@ -9,7 +9,7 @@ import android.os.IBinder;
 import android.text.TextUtils;
 
 import com.wangsz.musicservice.aidl.IPlayerInterface;
-import com.wangsz.musicservice.service.PlayService;
+import com.wangsz.wusic.service.PlayService;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 
@@ -43,7 +43,7 @@ public class MusicServiceManager {
         }, BIND_AUTO_CREATE);
     }
 
-    public static IPlayerInterface getPlayerInterface(){
+    public static IPlayerInterface getPlayerInterface() {
         if (mPlayerInterface == null) {
             throw new RuntimeException("mPlayerInterface == null");
         }
@@ -52,6 +52,7 @@ public class MusicServiceManager {
 
     /**
      * 判断是否是播放进程
+     *
      * @param context
      * @return
      */

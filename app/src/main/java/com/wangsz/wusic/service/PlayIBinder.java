@@ -1,9 +1,10 @@
-package com.wangsz.musicservice.service;
+package com.wangsz.wusic.service;
 
 import android.util.Log;
 
 import com.wangsz.musicservice.aidl.IPlayerInterface;
-import com.wangsz.musicservice.constant.Action;
+import com.wangsz.wusic.aidl.Song;
+import com.wangsz.wusic.constant.Action;
 
 /**
  * author: wangsz
@@ -14,7 +15,7 @@ public class PlayIBinder extends IPlayerInterface.Stub {
     private static final String TAG = PlayIBinder.class.getName();
 
     @Override
-    public void action(int action) {
+    public void action(int action,Song song) {
         switch (action) {
             case Action.PLAY:
                 Log.d(TAG, "service onBind : PLAY");

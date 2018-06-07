@@ -6,4 +6,7 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+    <string name="all_songs">所有音乐</string>
+    <string name="my_sheets">我的歌单</string>
+    <string name="recently">最近播放</string>
 </resources>

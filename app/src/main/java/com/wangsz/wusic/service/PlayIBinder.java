@@ -2,7 +2,7 @@ package com.wangsz.wusic.service;
 
 import android.util.Log;
 
-import com.wangsz.musicservice.aidl.IPlayerInterface;
+import com.wangsz.wusic.aidl.IPlayerInterface;
 import com.wangsz.wusic.aidl.Song;
 import com.wangsz.wusic.constant.Action;
 

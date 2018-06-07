@@ -8,7 +8,7 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.text.TextUtils;
 
-import com.wangsz.musicservice.aidl.IPlayerInterface;
+import com.wangsz.wusic.aidl.IPlayerInterface;
 import com.wangsz.wusic.service.PlayService;
 
 import static android.content.Context.BIND_AUTO_CREATE;

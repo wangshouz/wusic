@@ -12,7 +12,6 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/AppTheme">
-
         <service
             android:name=".service.PlayService"
             android:enabled="true"
@@ -25,13 +24,13 @@
             android:theme="@style/FullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ui.MainActivity"
-            android:screenOrientation="portrait" />
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

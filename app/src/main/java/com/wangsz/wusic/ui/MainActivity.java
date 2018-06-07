@@ -1,56 +1,118 @@
 package com.wangsz.wusic.ui;
 
-import android.Manifest;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
-import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.wangsz.wusic.R;
-import com.wangsz.wusic.manager.MediaManager;
+import com.wangsz.wusic.ui.fragment.HomeFragment;
+import com.wangsz.wusic.ui.fragment.TestFragment;
 
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-public class MainActivity extends BaseActivity {
-
-    private static String[] mPermissionList = new String[]{
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE};
-
-    private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
+    Toolbar mToolbar;
+    DrawerLayout mDrawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
 
-        RxPermissions rxPermissions = new RxPermissions(this);
-        Disposable disposable = rxPermissions.requestEachCombined(mPermissionList).subscribe(permission -> {
-            if (permission.granted) {
-                // All permissions are granted !
-                MediaManager.getInstance().refreshData(mContext);
-            } else if (permission.shouldShowRequestPermissionRationale) {
-                // At least one denied permission without ask never again
-            } else {
-                // At least one denied permission with ask never again
-                // Need to go to the settings
-                AlertDialog dialog = new AlertDialog.Builder(mContext)
-                        .setTitle("权限申请")
-                        .setMessage(mContext.getString(R.string.app_name) + "需要文件存储权限")
-                        .setNegativeButton("去授权", (dialog1, which) -> {
-//                            SettingUtil.goSetting(activity);
-                        })
-                        .create();
-                dialog.setCancelable(false);
-                dialog.show();
-            }
-        });
-        mCompositeDisposable.add(disposable);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDrawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        showMenuFragment(navigationView.getMenu().getItem(0));
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mCompositeDisposable.dispose();
+    public void onBackPressed() {
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            moveTaskToBack(true);
+        }
     }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        if (id == R.id.nav_camera) {
+            showMenuFragment(item);
+        } else if (id == R.id.nav_gallery) {
+            showMenuFragment(item);
+        } else if (id == R.id.nav_slideshow) {
+            showMenuFragment(item);
+        } else if (id == R.id.nav_manage) {
+            showMenuFragment(item);
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        }
+
+        mDrawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    private void showMenuFragment(MenuItem item) {
+        mToolbar.setTitle(item.getTitle());
+        showFragment(item);
+    }
+
+    //********************************************************************************************//
+    FragmentManager mFragmentManager;
+    FragmentTransaction mTransaction;
+
+    private void showFragment(MenuItem item) {
+        if (mFragmentManager == null) {
+            mFragmentManager = getSupportFragmentManager();
+        }
+        mTransaction = mFragmentManager.beginTransaction();
+
+        for (Fragment fragment : mFragmentManager.getFragments()) {
+            mTransaction.hide(fragment);
+        }
+
+        Fragment fragment = mFragmentManager.findFragmentByTag(item.getTitle().toString());
+
+        if (fragment != null) {
+            mTransaction.show(fragment);
+        } else {
+            mTransaction.add(R.id.fragment, getCurrentFragment(item), item.getTitle().toString());
+        }
+        mTransaction.commitAllowingStateLoss();
+    }
+
+    private Fragment getCurrentFragment(MenuItem item) {
+
+        int id = item.getItemId();
+
+        if (id == R.id.nav_camera) {
+            return new HomeFragment();
+        } else if (id == R.id.nav_gallery) {
+            return TestFragment.getInstance(item.getTitle().toString());
+        } else if (id == R.id.nav_slideshow) {
+            return TestFragment.getInstance(item.getTitle().toString());
+        } else if (id == R.id.nav_manage) {
+            return TestFragment.getInstance(item.getTitle().toString());
+        }
+        return null;
+    }
+
 }

@@ -10,27 +10,32 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher"
         android:theme="@style/AppTheme">
+
+        <!-- 音乐播放服务：放置于music进程中 -->
         <service
             android:name=".service.PlayService"
             android:enabled="true"
             android:exported="true"
             android:process=":music" />
 
+        <!-- 启动页-->
         <activity
             android:name=".ui.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/FullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- -->
         <activity
             android:name=".ui.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+
     </application>
 
 </manifest>

@@ -4,28 +4,58 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.util.SparseArray;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.wangsz.wusic.R;
-import com.wangsz.wusic.ui.fragment.HomeFragment;
+import com.wangsz.wusic.adapter.MainAdapter;
+import com.wangsz.wusic.ui.fragment.LocalMusicsFragment;
+import com.wangsz.wusic.ui.fragment.RecommendFragment;
 import com.wangsz.wusic.ui.fragment.TestFragment;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     Toolbar mToolbar;
     DrawerLayout mDrawerLayout;
+    BottomNavigationViewEx mBottomNavigationViewEx;
+    ViewPager mViewPager;
+    List<Fragment> mFragments = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mBottomNavigationViewEx = findViewById(R.id.bnv);
+        mBottomNavigationViewEx.enableItemShiftingMode(true);
+        mBottomNavigationViewEx.enableShiftingMode(false);
+        mBottomNavigationViewEx.setItemIconTintList(null);
+        mBottomNavigationViewEx.setLargeTextSize(10);
+
+        mFragments.add(new RecommendFragment());
+        mFragments.add(new LocalMusicsFragment());
+        mFragments.add(new TestFragment());
+        mViewPager = findViewById(R.id.viewPager);
+        mViewPager.setAdapter(new MainAdapter(getSupportFragmentManager(), mFragments));
+        mBottomNavigationViewEx.setupWithViewPager(mViewPager);
+
         mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
 
         mDrawerLayout = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -35,7 +65,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        showMenuFragment(navigationView.getMenu().getItem(0));
     }
 
     @Override
@@ -48,21 +77,34 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.search, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.search) {
+            Log.d("TAG", "search");
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public boolean onNavigationItemSelected(MenuItem item) {
 
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            showMenuFragment(item);
-        } else if (id == R.id.nav_gallery) {
-            showMenuFragment(item);
-        } else if (id == R.id.nav_slideshow) {
-            showMenuFragment(item);
-        } else if (id == R.id.nav_manage) {
-            showMenuFragment(item);
-        } else if (id == R.id.nav_share) {
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_gallery) {
+
+        } else if (id == R.id.nav_slideshow) {
+
+        } else if (id == R.id.nav_manage) {
+
+        } else if (id == R.id.nav_share) {
 
         }
 
@@ -70,49 +112,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         return true;
     }
 
-    private void showMenuFragment(MenuItem item) {
-        mToolbar.setTitle(item.getTitle());
-        showFragment(item);
-    }
-
-    //********************************************************************************************//
-    FragmentManager mFragmentManager;
-    FragmentTransaction mTransaction;
-
-    private void showFragment(MenuItem item) {
-        if (mFragmentManager == null) {
-            mFragmentManager = getSupportFragmentManager();
-        }
-        mTransaction = mFragmentManager.beginTransaction();
-
-        for (Fragment fragment : mFragmentManager.getFragments()) {
-            mTransaction.hide(fragment);
-        }
-
-        Fragment fragment = mFragmentManager.findFragmentByTag(item.getTitle().toString());
-
-        if (fragment != null) {
-            mTransaction.show(fragment);
-        } else {
-            mTransaction.add(R.id.fragment, getCurrentFragment(item), item.getTitle().toString());
-        }
-        mTransaction.commitAllowingStateLoss();
-    }
-
-    private Fragment getCurrentFragment(MenuItem item) {
-
-        int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            return new HomeFragment();
-        } else if (id == R.id.nav_gallery) {
-            return TestFragment.getInstance(item.getTitle().toString());
-        } else if (id == R.id.nav_slideshow) {
-            return TestFragment.getInstance(item.getTitle().toString());
-        } else if (id == R.id.nav_manage) {
-            return TestFragment.getInstance(item.getTitle().toString());
-        }
-        return null;
-    }
+    //*****************************************必要权限申请*******************************************//
 
 }

@@ -59,7 +59,7 @@ public class MusicServiceManager {
     public static boolean isMusicServiceProcess(Context context) {
         int pid = android.os.Process.myPid();
         String process = getAppNameByPID(context, pid);
-        return !TextUtils.isEmpty(process) && process.contains(":music");
+        return !TextUtils.isEmpty(process) && process.contains(":ic_launcher");
     }
 
     /**

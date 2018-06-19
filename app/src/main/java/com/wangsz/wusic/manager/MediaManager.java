@@ -9,8 +9,8 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
+import com.elvishew.xlog.XLog;
 import com.wangsz.wusic.aidl.Song;
 import com.wangsz.wusic.bean.SongInfo;
 
@@ -43,7 +43,7 @@ public class MediaManager {
         return MEDIAMANAGER;
     }
 
-    public HashSet<SongInfo> refreshData(Context context) {
+    private HashSet<SongInfo> refreshData(Context context) {
         if (songs == null)
             songs = new HashSet<>();
         else {
@@ -74,18 +74,17 @@ public class MediaManager {
             song.setSize(cursor.getLong(cursor.getColumnIndex(SongInfo.SIZE)));
             song.setDate_added(cursor.getLong(cursor.getColumnIndex(SongInfo.DATE_ADDED)));
             song.setDate_modified(cursor.getLong(cursor.getColumnIndex(SongInfo.DATE_MODIFIED)));
-            Log.d("songs", "song = " + song.getDisplay_name() + ";" + song.getTitle());
+            XLog.d("song = " + song.getDisplay_name() + ";" + song.getTitle());
             songs.add(song);
         }
         cursor.close();
-        Log.d("songs", "songs = " + songs.size());
+        XLog.d("songs = " + songs.size());
         return songs;
     }
 
     //根据专辑 id 获得专辑图片保存路径
     private synchronized String getAlbumArtPicPath(Context context, String albumId) {
 
-        // 小米应用商店检测crash ，错误信息：[31188,0,com.duan.musicoco,13155908,java.lang.IllegalStateException,Unknown URL: content://media/external/audio/albums/null,Parcel.java,1548]
         if (TextUtils.isEmpty(albumId)) {
             return null;
         }

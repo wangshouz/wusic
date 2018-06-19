@@ -1,46 +1,25 @@
 package com.wangsz.wusic.ui.fragment;
 
-import com.wangsz.wusic.base.BaseInterface;
-import com.wangsz.wusic.bean.SongInfo;
-import com.wangsz.wusic.manager.MediaManager;
-import com.wangsz.wusic.ui.fragment.base.BaseListFragment;
-import com.wangsz.wusic.utils.PermissionUtil;
-import com.wangsz.wusic.utils.SettingUtil;
-import com.wangsz.wusic.viewbinder.SongViewBinder;
+import com.wangsz.wusic.R;
+import com.wangsz.wusic.adapter.TabAdapter;
+import com.wangsz.wusic.ui.fragment.base.BaseTabFragment;
 
 /**
  * author: wangsz
  * date: On 2018/6/6 0006
  */
-public class LocalMusicsFragment extends BaseListFragment {
+public class LocalMusicsFragment extends BaseTabFragment {
 
     @Override
-    public void initAdapterRegister() {
-        mMultiTypeAdapter.register(SongInfo.class, new SongViewBinder());
-    }
-
-    @Override
-    protected void init() {
-        super.init();
+    public void initTabs() {
+        mTabClasses.add(new TabAdapter.TabClass(MusicListFragment.getInstance(0), getString(R.string.song)));
+        mTabClasses.add(new TabAdapter.TabClass(MusicListFragment.getInstance(1), getString(R.string.singer)));
+        mTabClasses.add(new TabAdapter.TabClass(MusicListFragment.getInstance(2), getString(R.string.directory)));
     }
 
     @Override
     public void loadData() {
-        new PermissionUtil(mActivity, new BaseInterface<Void>() {
-            @Override
-            public void success(Void o) {
-                getSongs();
-            }
 
-            @Override
-            public void failed(int code) {
-                SettingUtil.goSetting(mActivity);
-            }
-        }).requestStoragePermissions();
     }
 
-    private void getSongs() {
-        mItems.addAll(MediaManager.getInstance().getSongInfoList(mContext));
-        mMultiTypeAdapter.notifyDataSetChanged();
-    }
 }

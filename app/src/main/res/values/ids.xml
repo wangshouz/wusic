@@ -1,0 +1,5 @@
+<resources>
+    <item name="bottomNavigationViewEx" type="id">bottomNavigationViewEx</item>
+    <item name="viewPager" type="id">viewPager</item>
+    <item name="tablayout" type="id">tablayout</item>
+</resources>

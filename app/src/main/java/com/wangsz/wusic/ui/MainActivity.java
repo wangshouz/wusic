@@ -3,19 +3,13 @@ package com.wangsz.wusic.ui;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.wangsz.wusic.R;
@@ -40,9 +34,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mBottomNavigationViewEx = findViewById(R.id.bnv);
-        mBottomNavigationViewEx.enableItemShiftingMode(true);
-        mBottomNavigationViewEx.enableShiftingMode(false);
+        mBottomNavigationViewEx = findViewById(R.id.bottomNavigationViewEx);
+        mBottomNavigationViewEx.enableItemShiftingMode(true); //除了当前选中项，其他项的文本将会隐藏
+        mBottomNavigationViewEx.enableShiftingMode(false); //选中项和其他项的宽度不一样。
         mBottomNavigationViewEx.setItemIconTintList(null);
         mBottomNavigationViewEx.setLargeTextSize(10);
 
@@ -86,7 +80,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.search) {
-            Log.d("TAG", "search");
+//            Logger.d("search");
         }
         return super.onOptionsItemSelected(item);
     }
@@ -97,8 +91,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-
-        } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
 

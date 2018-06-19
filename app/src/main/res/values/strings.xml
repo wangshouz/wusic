@@ -14,4 +14,7 @@
     <string name="about_me">关于我</string>
     <string name="change_skin">个性换肤</string>
     <string name="sheet">我的歌单</string>
+    <string name="song">单曲</string>
+    <string name="singer">歌手</string>
+    <string name="directory">文件夹</string>
 </resources>

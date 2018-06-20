@@ -4,13 +4,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DividerItemDecoration;
-import android.util.Log;
 import android.view.View;
 
 import com.elvishew.xlog.XLog;
 import com.wangsz.wusic.R;
 import com.wangsz.wusic.base.BaseInterface;
 import com.wangsz.wusic.bean.SongInfo;
+import com.wangsz.wusic.db.model.DBSong;
 import com.wangsz.wusic.manager.MediaManager;
 import com.wangsz.wusic.ui.fragment.base.BaseListFragment;
 import com.wangsz.wusic.utils.PermissionUtil;

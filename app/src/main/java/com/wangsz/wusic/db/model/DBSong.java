@@ -1,6 +1,9 @@
-package com.wangsz.wusic.bean;
+package com.wangsz.wusic.db.model;
 
-public class SongInfo {
+import io.realm.RealmObject;
+
+
+public class DBSong extends RealmObject {
 
     //时间 ms
     private long duration;
@@ -46,7 +49,7 @@ public class SongInfo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        SongInfo songInfo = (SongInfo) o;
+        DBSong songInfo = (DBSong) o;
 
         return data.equals(songInfo.data);
 
@@ -129,7 +132,6 @@ public class SongInfo {
     public void setDate_modified(long date_modified) {
         this.date_modified = date_modified;
     }
-
 
     public long getDuration() {
         return duration;

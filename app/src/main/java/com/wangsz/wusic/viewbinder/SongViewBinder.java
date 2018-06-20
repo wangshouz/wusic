@@ -13,6 +13,7 @@ import com.elvishew.xlog.XLog;
 import com.wangsz.wusic.R;
 import com.wangsz.wusic.aidl.Song;
 import com.wangsz.wusic.bean.SongInfo;
+import com.wangsz.wusic.db.model.DBSong;
 import com.wangsz.wusic.constant.Action;
 import com.wangsz.wusic.manager.MusicServiceManager;
 

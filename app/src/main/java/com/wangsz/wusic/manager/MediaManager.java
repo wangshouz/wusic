@@ -6,19 +6,18 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.elvishew.xlog.XLog;
 import com.wangsz.wusic.bean.SongInfo;
+import com.wangsz.wusic.db.model.DBSong;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
 import io.realm.Realm;
-
-/**
- * Created by DuanJiaNing on 2017/5/24.
- * 线程安全的单例，该类在播放进程中也会用到，此时单例失效。
- */
 
 public class MediaManager {
 
@@ -57,16 +56,12 @@ public class MediaManager {
         XLog.d("开始插入数据库 ======= ");
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        realm.where(SongInfo.class).findAll().deleteAllFromRealm();
+        realm.where(DBSong.class).findAll().deleteAllFromRealm();
         while (cursor.moveToNext()) {
-//            SongInfo song = new SongInfo();
-            SongInfo song = realm.createObject(SongInfo.class);
+            SongInfo song = new SongInfo();
             String album_id = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM_ID));
             song.setAlbum_id(album_id);
             song.setAlbum_path(getAlbumArtPicPath(context, album_id));
-            song.setTitle_key(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.TITLE_KEY)));
-            song.setArtist_key(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ARTIST_KEY)));
-            song.setAlbum_key(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM_KEY)));
             song.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ARTIST)));
             song.setAlbum(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM)));
             song.setData(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DATA)));
@@ -80,10 +75,12 @@ public class MediaManager {
             song.setDate_modified(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DATE_MODIFIED)));
             XLog.d("song = " + song.getDisplay_name() + ";" + song.getTitle());
             songs.add(song);
+            realm.createObjectFromJson(DBSong.class, JSON.toJSONString(song));
         }
         cursor.close();
         XLog.d("songs = " + songs.size());
         realm.commitTransaction();
+        realm.close();
         XLog.d("插入数据库结束 ======= " + (System.currentTimeMillis() - time));
         return songs;
     }

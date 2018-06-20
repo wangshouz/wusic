@@ -6,8 +6,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.elvishew.xlog.XLog;
 import com.wangsz.wusic.R;
 import com.wangsz.wusic.aidl.Song;
 import com.wangsz.wusic.bean.SongInfo;
@@ -22,6 +24,8 @@ import me.drakeet.multitype.ItemViewBinder;
  */
 public class SongViewBinder extends ItemViewBinder<SongInfo, SongViewBinder.ViewHolder> {
 
+    private int position = -1;
+
     @NonNull
     @Override
     protected ViewHolder onCreateViewHolder(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
@@ -31,26 +35,45 @@ public class SongViewBinder extends ItemViewBinder<SongInfo, SongViewBinder.View
 
     @Override
     protected void onBindViewHolder(@NonNull ViewHolder holder, @NonNull SongInfo song) {
+
         holder.tvTitle.setText(song.getTitle());
-        holder.tvDuration.setText(song.getDuration() + "ms");
-        holder.itemView.setOnClickListener(v -> {
-            try {
-                MusicServiceManager.getPlayerInterface().action(Action.PLAY, new Song(song.getData()));
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        });
+        holder.tvDesc.setText(String.format("%s-%s", song.getArtist(), song.getAlbum()));
+
+        if (holder.getAdapterPosition() == position) {
+            holder.ivVolume.setVisibility(View.VISIBLE);
+            holder.itemView.setOnClickListener(v -> {
+                position = holder.getAdapterPosition();
+                XLog.d("toSongDetail");
+            });
+        } else {
+            holder.ivVolume.setVisibility(View.GONE);
+            holder.itemView.setOnClickListener(v -> {
+                try {
+                    int oldPosition = position;
+                    position = holder.getAdapterPosition();
+                    MusicServiceManager.getPlayerInterface().action(Action.PLAY, new Song(song.getData()));
+                    getAdapter().notifyItemChanged(oldPosition);
+                    getAdapter().notifyItemChanged(position);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
+        ImageView ivVolume;
         TextView tvTitle;
-        TextView tvDuration;
+        TextView tvDesc;
+        ImageView ivMore;
 
         ViewHolder(View itemView) {
             super(itemView);
+            ivVolume = itemView.findViewById(R.id.iv_volume);
             tvTitle = itemView.findViewById(R.id.tv_title);
-            tvDuration = itemView.findViewById(R.id.tv_duration);
+            tvDesc = itemView.findViewById(R.id.tv_desc);
+            ivMore = itemView.findViewById(R.id.iv_more);
         }
     }
 }

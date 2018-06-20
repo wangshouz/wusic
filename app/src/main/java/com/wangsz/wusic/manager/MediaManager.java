@@ -2,21 +2,18 @@ package com.wangsz.wusic.manager;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.elvishew.xlog.XLog;
-import com.wangsz.wusic.aidl.Song;
 import com.wangsz.wusic.bean.SongInfo;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+
+import io.realm.Realm;
 
 /**
  * Created by DuanJiaNing on 2017/5/24.
@@ -56,29 +53,38 @@ public class MediaManager {
             return songs;
         }
 
+        long time = System.currentTimeMillis();
+        XLog.d("开始插入数据库 ======= ");
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        realm.where(SongInfo.class).findAll().deleteAllFromRealm();
         while (cursor.moveToNext()) {
-            SongInfo song = new SongInfo();
-            song.setAlbum_id(cursor.getString(cursor.getColumnIndex(SongInfo.ALBUM_ID)));
-            song.setAlbum_path(getAlbumArtPicPath(context, song.getAlbum_id()));
-            song.setTitle_key(cursor.getString(cursor.getColumnIndex(SongInfo.TITLE_KEY)));
-            song.setArtist_key(cursor.getString(cursor.getColumnIndex(SongInfo.ARTIST_KEY)));
-            song.setAlbum_key(cursor.getString(cursor.getColumnIndex(SongInfo.ALBUM_KEY)));
-            song.setArtist(cursor.getString(cursor.getColumnIndex(SongInfo.ARTIST)));
-            song.setAlbum(cursor.getString(cursor.getColumnIndex(SongInfo.ALBUM)));
-            song.setData(cursor.getString(cursor.getColumnIndex(SongInfo.DATA)));
-            song.setDisplay_name(cursor.getString(cursor.getColumnIndex(SongInfo.DISPLAY_NAME)));
-            song.setTitle(cursor.getString(cursor.getColumnIndex(SongInfo.TITLE)));
-            song.setMime_type(cursor.getString(cursor.getColumnIndex(SongInfo.MIME_TYPE)));
-            song.setYear(cursor.getLong(cursor.getColumnIndex(SongInfo.YEAR)));
-            song.setDuration(cursor.getLong(cursor.getColumnIndex(SongInfo.DURATION)));
-            song.setSize(cursor.getLong(cursor.getColumnIndex(SongInfo.SIZE)));
-            song.setDate_added(cursor.getLong(cursor.getColumnIndex(SongInfo.DATE_ADDED)));
-            song.setDate_modified(cursor.getLong(cursor.getColumnIndex(SongInfo.DATE_MODIFIED)));
+//            SongInfo song = new SongInfo();
+            SongInfo song = realm.createObject(SongInfo.class);
+            String album_id = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM_ID));
+            song.setAlbum_id(album_id);
+            song.setAlbum_path(getAlbumArtPicPath(context, album_id));
+            song.setTitle_key(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.TITLE_KEY)));
+            song.setArtist_key(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ARTIST_KEY)));
+            song.setAlbum_key(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM_KEY)));
+            song.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ARTIST)));
+            song.setAlbum(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM)));
+            song.setData(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DATA)));
+            song.setDisplay_name(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DISPLAY_NAME)));
+            song.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.TITLE)));
+            song.setMime_type(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.MIME_TYPE)));
+            song.setYear(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.YEAR)));
+            song.setDuration(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DURATION)));
+            song.setSize(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.SIZE)));
+            song.setDate_added(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DATE_ADDED)));
+            song.setDate_modified(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DATE_MODIFIED)));
             XLog.d("song = " + song.getDisplay_name() + ";" + song.getTitle());
             songs.add(song);
         }
         cursor.close();
         XLog.d("songs = " + songs.size());
+        realm.commitTransaction();
+        XLog.d("插入数据库结束 ======= " + (System.currentTimeMillis() - time));
         return songs;
     }
 
@@ -108,39 +114,16 @@ public class MediaManager {
         return imagePath;
     }
 
-    @Nullable
-    public SongInfo getSongInfo(Context context, @NonNull Song song) {
-        check(context);
-        SongInfo info = null;
-        for (SongInfo s : songs) {
-            info = s;
-            if (info.getData().equals(song.path)) {
-                break;
-            }
-        }
-        return info;
-    }
-
-    public SongInfo getSongInfo(Context context, @NonNull String path) {
-        return getSongInfo(context, new Song(path));
-    }
-
-    public List<Song> getSongList(Context context) {
-        check(context);
-        List<Song> songInfos = new ArrayList<>();
-        for (SongInfo song : songs) {
-            songInfos.add(new Song(song.getData()));
-        }
-        return songInfos;
-    }
-
+    /**
+     * 获取所有歌曲
+     *
+     * @param context
+     * @return
+     */
     public List<SongInfo> getSongInfoList(Context context) {
         check(context);
-        List<SongInfo> songInfos = new ArrayList<>();
-        for (SongInfo song : songs) {
-            songInfos.add(song);
-        }
-        return songInfos;
+
+        return new ArrayList<>(songs);
     }
 
     private void check(Context context) {
@@ -148,29 +131,5 @@ public class MediaManager {
             refreshData(context);
     }
 
-    public void scanSdCard(Context context, @Nullable MediaScannerConnection.OnScanCompletedListener listener) {
-        MediaScannerConnection.scanFile(context, new String[]{Environment
-                .getExternalStorageDirectory().getAbsolutePath()}, null, listener);
 
-    }
-
-    /**
-     * 检查媒体库是否为空
-     *
-     * @param refresh 是否要重新获取数据之后再确定，这个过程可能比较耗时
-     * @return 为空返回 true
-     */
-    public boolean emptyMediaLibrary(Context context, boolean refresh) {
-        if (refresh) {
-            refreshData(context);
-        } else {
-            check(context);
-        }
-
-        if (songs.size() == 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 }

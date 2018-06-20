@@ -4,6 +4,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.wangsz.wusic.R;
+import com.wangsz.wusic.bean.Empty;
+import com.wangsz.wusic.viewbinder.EmptyViewBinder;
 
 import me.drakeet.multitype.Items;
 import me.drakeet.multitype.MultiTypeAdapter;
@@ -17,7 +19,9 @@ public abstract class BaseListFragment extends BaseFragment {
     /**
      * 初始化MultiTypeAdapter注册
      */
-    public abstract void initAdapterRegister();
+    protected void initAdapterRegister(){
+        mMultiTypeAdapter.register(Empty.class,new EmptyViewBinder());
+    }
 
     public RecyclerView mRecyclerView;
     protected MultiTypeAdapter mMultiTypeAdapter;
@@ -37,5 +41,12 @@ public abstract class BaseListFragment extends BaseFragment {
         mItems = new Items();
         mMultiTypeAdapter.setItems(mItems);
         mRecyclerView.setAdapter(mMultiTypeAdapter);
+    }
+
+    protected void handleData(){
+        if (mItems.isEmpty()){
+            mItems.add(new Empty());
+        }
+        mMultiTypeAdapter.notifyDataSetChanged();
     }
 }

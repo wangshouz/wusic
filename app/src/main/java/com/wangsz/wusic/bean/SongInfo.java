@@ -1,9 +1,9 @@
 package com.wangsz.wusic.bean;
 
-import android.provider.MediaStore;
+import io.realm.RealmObject;
 
 
-final public class SongInfo implements MediaStore.Audio.AudioColumns {
+public class SongInfo extends RealmObject {
 
     //用于搜索、排序、分类
     private String title_key;
@@ -28,8 +28,7 @@ final public class SongInfo implements MediaStore.Audio.AudioColumns {
     //专辑录制时间
     private long year;
 
-    //磁盘上的保存路径
-    //与服务端的 path 域对应，对于同一首歌曲（文件路径相同），两者应该相同
+    //Path to the file on disk. 文件路径
     private String data;
 
     //文件大小 bytes
@@ -68,7 +67,7 @@ final public class SongInfo implements MediaStore.Audio.AudioColumns {
 
     @Override
     public String toString() {
-        return "DBSongInfo{" +
+        return "SongInfo{" +
                 "title_key='" + title_key + '\'' +
                 ", artist_key='" + artist_key + '\'' +
                 ", album_key='" + album_key + '\'' +

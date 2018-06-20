@@ -19,6 +19,7 @@ allprojects {
         google()
         jcenter()
         maven { url "http://mvn.leancloud.cn/nexus/content/repositories/public" }
+        maven { url 'https://github.com/WickeDev/stetho-realm/raw/master/maven-repo' }
         maven { url "https://jitpack.io" }
         maven { url "https://maven.google.com" }
     }

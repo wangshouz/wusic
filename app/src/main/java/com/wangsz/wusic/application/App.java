@@ -6,12 +6,16 @@ import com.avos.avoscloud.AVOSCloud;
 import com.elvishew.xlog.LogConfiguration;
 import com.elvishew.xlog.LogLevel;
 import com.elvishew.xlog.XLog;
-import com.elvishew.xlog.printer.AndroidPrinter;
-import com.elvishew.xlog.printer.ConsolePrinter;
-import com.elvishew.xlog.printer.Printer;
+import com.facebook.stetho.Stetho;
+import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 import com.wangsz.wusic.BuildConfig;
+import com.wangsz.wusic.db.DBConstant;
+import com.wangsz.wusic.db.Migration;
 import com.wangsz.wusic.manager.MusicServiceManager;
 import com.wangsz.wusic.utils.PropertiesUtil;
+
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 
 /**
@@ -31,6 +35,10 @@ public class App extends Application {
         initLog();
 
         if (!MusicServiceManager.isMusicServiceProcess(sApplication)) {
+
+            // 初始化数据库
+            initDB();
+
             MusicServiceManager.init(sApplication);
             // 在assets文件夹中创建appkey.properties文件
             // LeanCloud初始化,参数依次为 this, AppId, AppKey
@@ -38,7 +46,25 @@ public class App extends Application {
             AVOSCloud.setDebugLogEnabled(BuildConfig.DEBUG);
         }
 
+    }
 
+    private void initDB() {
+        Realm.init(sApplication);
+        RealmConfiguration configuration =
+                new RealmConfiguration.Builder()
+                        .name(DBConstant.DB_NAME)
+//                        .migration(new Migration())
+                        .schemaVersion(DBConstant.DB_VERSION)
+                        .deleteRealmIfMigrationNeeded()
+                        .build();
+        Realm.setDefaultConfiguration(configuration);
+
+        Stetho.initialize(//Stetho初始化
+                Stetho.newInitializerBuilder(this)
+                        .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+                        .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
+                        .build()
+        );
     }
 
     private void initLog() {

@@ -1,5 +1,7 @@
 package com.wangsz.libs.widgets;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -24,16 +26,18 @@ import com.wangsz.wusic.R;
  */
 public class PlayView extends FrameLayout implements View.OnClickListener {
 
-    private int MAX = 30;
-    private int mCurrent = 0;
-    private int mProgress = 0;
+    private long MAX = 100;
+    private float mProgress = 0;
     private boolean mPlaying = false;
+    private boolean mFinished = false;
     private ObjectAnimator mAnimator;
     private Paint mPaint = new Paint();
     private int mIntPaintWidth = 4;
 
     private Bitmap mBitmapPlay;
     private Bitmap mBitmapPause;
+
+    private OnClickPlayListener onClickPlayListener;
 
     public PlayView(@NonNull Context context) {
         this(context, null);
@@ -49,9 +53,6 @@ public class PlayView extends FrameLayout implements View.OnClickListener {
     }
 
     private void init() {
-        mAnimator = ObjectAnimator.ofInt(this, "progress", mCurrent, MAX);
-        mAnimator.setDuration(MAX * 1000);
-        mAnimator.setInterpolator(new LinearInterpolator());
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setAntiAlias(true);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
@@ -61,6 +62,30 @@ public class PlayView extends FrameLayout implements View.OnClickListener {
         mBitmapPlay = BitmapFactory.decodeResource(getContext().getResources(), R.mipmap.play);
         mBitmapPause = BitmapFactory.decodeResource(getContext().getResources(), R.mipmap.pause);
         setOnClickListener(this);
+    }
+
+    public void initAnim(long duration) {
+        MAX = duration;
+        mAnimator = ObjectAnimator.ofFloat(this, "progress", 0, MAX);
+        mAnimator.setDuration(duration);
+        mAnimator.setInterpolator(new LinearInterpolator());
+        mAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                mProgress = 0;
+                mPlaying = false;
+                mFinished = true;
+                postInvalidate();
+            }
+        });
+        mAnimator.start();
+        mPlaying = true;
+        postInvalidate();
+    }
+
+    public void setOnClickPlayListener(OnClickPlayListener onClickPlayListener) {
+        this.onClickPlayListener = onClickPlayListener;
     }
 
     private int mRadius;
@@ -101,19 +126,30 @@ public class PlayView extends FrameLayout implements View.OnClickListener {
             mAnimator.pause();
             mPlaying = false;
             postInvalidate();
+            if (onClickPlayListener != null) {
+                onClickPlayListener.click();
+            }
         } else {
-            if (mAnimator.isPaused())
+            if (mAnimator.isPaused()) {
                 mAnimator.resume();
-            else
+                if (onClickPlayListener != null) {
+                    onClickPlayListener.click();
+                }
+            } else {
+                if (mFinished && onClickPlayListener != null) {
+                    onClickPlayListener.click();
+                    mFinished = false;
+                }
                 mAnimator.start();
+            }
             mPlaying = true;
             postInvalidate();
         }
     }
 
-    private void setProgress(int progress) {
+    private void setProgress(float progress) {
         if (!mPlaying || mProgress == progress) return;
-        Log.d("setProgress", progress + "");
+//        Log.d("setProgress", progress + "");
         this.mProgress = progress;
         postInvalidate();
     }
@@ -129,4 +165,9 @@ public class PlayView extends FrameLayout implements View.OnClickListener {
         mBitmapPause.recycle();
         mBitmapPlay.recycle();
     }
+
+    public interface OnClickPlayListener {
+        void click();
+    }
+
 }

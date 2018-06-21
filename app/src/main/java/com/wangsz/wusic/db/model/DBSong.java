@@ -2,9 +2,14 @@ package com.wangsz.wusic.db.model;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Property;
 
 @Entity
 public class DBSong {
+
+    @Id
+    private Long id;
 
     //时间 ms
     private long duration;
@@ -48,11 +53,12 @@ public class DBSong {
     //MIME type
     private String mime_type;
 
-    @Generated(hash = 1191339526)
-    public DBSong(long duration, String artist, String parent_path, String album,
-            String album_id, String album_path, long year, String data, long size,
-            String display_name, String title, long date_added, long date_modified,
-            String mime_type) {
+    @Generated(hash = 1504354620)
+    public DBSong(Long id, long duration, String artist, String parent_path,
+            String album, String album_id, String album_path, long year,
+            String data, long size, String display_name, String title,
+            long date_added, long date_modified, String mime_type) {
+        this.id = id;
         this.duration = duration;
         this.artist = artist;
         this.parent_path = parent_path;
@@ -203,5 +209,13 @@ public class DBSong {
 
     public void setParent_path(String parent_path) {
         this.parent_path = parent_path;
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

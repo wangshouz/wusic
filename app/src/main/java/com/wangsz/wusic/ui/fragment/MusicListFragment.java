@@ -9,6 +9,7 @@ import android.view.View;
 import com.elvishew.xlog.XLog;
 import com.wangsz.wusic.R;
 import com.wangsz.wusic.base.BaseInterface;
+import com.wangsz.wusic.db.GreenDaoManager;
 import com.wangsz.wusic.db.model.DBSong;
 import com.wangsz.wusic.manager.MediaManager;
 import com.wangsz.wusic.ui.fragment.base.BaseListFragment;
@@ -20,9 +21,12 @@ import java.util.List;
 import java.util.Objects;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -65,6 +69,9 @@ public class MusicListFragment extends BaseListFragment {
     @Override
     public void loadData() {
         XLog.d("type = " + mIntType);
+        if (mIntType == 1) {
+            hasLoadData = false;
+        }
         new PermissionUtil(mActivity, new BaseInterface<Void>() {
             @Override
             public void success(Void o) {
@@ -79,14 +86,25 @@ public class MusicListFragment extends BaseListFragment {
     }
 
     private void getSongs() {
-        mDisposable = Observable.create((ObservableOnSubscribe<List<DBSong>>) emitter ->
-                emitter.onNext(MediaManager.getInstance().getAllSongs(mContext)))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(dbSongs -> {
-                    mItems.addAll(dbSongs);
-                    handleData();
-                });
+        if (mIntType == 0)
+            mDisposable = Observable.create((ObservableOnSubscribe<List<DBSong>>) emitter ->
+                    emitter.onNext(MediaManager.getInstance().getAllSongs(mContext)))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(dbSongs -> {
+                        mItems.clear();
+                        mItems.addAll(dbSongs);
+                        handleData();
+                    });
+        else
+            mDisposable = Observable.create((ObservableOnSubscribe<List<DBSong>>) emitter ->
+                    emitter.onNext(GreenDaoManager.getInstance().getSession().loadAll(DBSong.class)))
+                    .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(dbSongs -> {
+                        mItems.clear();
+                        mItems.addAll(dbSongs);
+                        handleData();
+                    });
     }
 
     @Override

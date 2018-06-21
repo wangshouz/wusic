@@ -10,10 +10,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.elvishew.xlog.XLog;
+import com.wangsz.greendao.gen.DBSongDao;
 import com.wangsz.libs.rxbus.RxBus;
 import com.wangsz.wusic.R;
 import com.wangsz.wusic.aidl.Song;
 import com.wangsz.wusic.constant.Action;
+import com.wangsz.wusic.db.GreenDaoManager;
 import com.wangsz.wusic.db.model.DBSong;
 import com.wangsz.wusic.events.SongEvent;
 import com.wangsz.wusic.manager.MusicServiceManager;
@@ -53,12 +55,22 @@ public class SongViewBinder extends ItemViewBinder<DBSong, SongViewBinder.ViewHo
                 try {
                     int oldPosition = position;
                     position = holder.getAdapterPosition();
+                    // 播放音乐
                     MusicServiceManager.getPlayerInterface().action(Action.PLAY, new Song(song.getData()));
-
+                    // 发送消息更新底部播放UI
                     RxBus.getInstance().send(new SongEvent(song));
-
+                    // 更新列表UI
                     getAdapter().notifyItemChanged(oldPosition);
                     getAdapter().notifyItemChanged(position);
+                    // 存下最近播放
+                    song.setDate_modified(System.currentTimeMillis());
+                    DBSong dbSong = GreenDaoManager.getInstance().getSession().getDBSongDao().queryBuilder().where(DBSongDao.Properties.Data.eq(song.getData())).unique();
+                    if (dbSong != null) {
+                        dbSong.setDate_modified(System.currentTimeMillis());
+                        GreenDaoManager.getInstance().getSession().getDBSongDao().update(dbSong);
+                    } else {
+                        GreenDaoManager.getInstance().getSession().getDBSongDao().insert(song);
+                    }
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }

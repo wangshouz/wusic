@@ -90,8 +90,8 @@ public abstract class BaseFragment extends Fragment {
         }
 
         if (!hasLoadData && isVisibleToUser) {
-            loadData();
             hasLoadData = true;
+            loadData();
         }
 
         onFragmentVisibleChange(isVisibleToUser);

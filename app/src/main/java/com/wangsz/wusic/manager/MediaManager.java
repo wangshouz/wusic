@@ -7,7 +7,6 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 
 import com.elvishew.xlog.XLog;
-import com.wangsz.wusic.db.GreenDaoManager;
 import com.wangsz.wusic.db.model.DBSong;
 
 import java.io.File;
@@ -66,11 +65,6 @@ public class MediaManager {
         }
         cursor.close();
         // 先清空数据
-        XLog.d("清空数据库 ======= ");
-        GreenDaoManager.getInstance().getSession().getDBSongDao().deleteAll();
-        XLog.d("开始插入数据库 ======= ");
-        GreenDaoManager.getInstance().getSession().getDBSongDao().insertInTx(mSongs);
-        XLog.d("插入数据库结束 ======= ");
         return mSongs;
     }
 

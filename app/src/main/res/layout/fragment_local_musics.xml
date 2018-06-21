@@ -13,10 +13,11 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <include
-        android:id="@+id/frament_bottom"
-        layout="@layout/include_play_bottom"
+    <ViewStub
+        android:id="@+id/viewstub"
         android:layout_width="match_parent"
-        android:layout_height="55dp" />
+        android:layout_height="55dp"
+        android:inflatedId="@+id/viewstub_layout"
+        android:layout="@layout/include_play_bottom" />
 
 </LinearLayout>

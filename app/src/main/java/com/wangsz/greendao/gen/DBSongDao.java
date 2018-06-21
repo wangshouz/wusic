@@ -15,7 +15,7 @@ import com.wangsz.wusic.db.model.DBSong;
 /** 
  * DAO for table "DBSONG".
 */
-public class DBSongDao extends AbstractDao<DBSong, Void> {
+public class DBSongDao extends AbstractDao<DBSong, Long> {
 
     public static final String TABLENAME = "DBSONG";
 
@@ -24,20 +24,21 @@ public class DBSongDao extends AbstractDao<DBSong, Void> {
      * Can be used for QueryBuilder and for referencing column names.
      */
     public static class Properties {
-        public final static Property Duration = new Property(0, long.class, "duration", false, "DURATION");
-        public final static Property Artist = new Property(1, String.class, "artist", false, "ARTIST");
-        public final static Property Parent_path = new Property(2, String.class, "parent_path", false, "PARENT_PATH");
-        public final static Property Album = new Property(3, String.class, "album", false, "ALBUM");
-        public final static Property Album_id = new Property(4, String.class, "album_id", false, "ALBUM_ID");
-        public final static Property Album_path = new Property(5, String.class, "album_path", false, "ALBUM_PATH");
-        public final static Property Year = new Property(6, long.class, "year", false, "YEAR");
-        public final static Property Data = new Property(7, String.class, "data", false, "DATA");
-        public final static Property Size = new Property(8, long.class, "size", false, "SIZE");
-        public final static Property Display_name = new Property(9, String.class, "display_name", false, "DISPLAY_NAME");
-        public final static Property Title = new Property(10, String.class, "title", false, "TITLE");
-        public final static Property Date_added = new Property(11, long.class, "date_added", false, "DATE_ADDED");
-        public final static Property Date_modified = new Property(12, long.class, "date_modified", false, "DATE_MODIFIED");
-        public final static Property Mime_type = new Property(13, String.class, "mime_type", false, "MIME_TYPE");
+        public final static Property Id = new Property(0, Long.class, "id", true, "_id");
+        public final static Property Duration = new Property(1, long.class, "duration", false, "DURATION");
+        public final static Property Artist = new Property(2, String.class, "artist", false, "ARTIST");
+        public final static Property Parent_path = new Property(3, String.class, "parent_path", false, "PARENT_PATH");
+        public final static Property Album = new Property(4, String.class, "album", false, "ALBUM");
+        public final static Property Album_id = new Property(5, String.class, "album_id", false, "ALBUM_ID");
+        public final static Property Album_path = new Property(6, String.class, "album_path", false, "ALBUM_PATH");
+        public final static Property Year = new Property(7, long.class, "year", false, "YEAR");
+        public final static Property Data = new Property(8, String.class, "data", false, "DATA");
+        public final static Property Size = new Property(9, long.class, "size", false, "SIZE");
+        public final static Property Display_name = new Property(10, String.class, "display_name", false, "DISPLAY_NAME");
+        public final static Property Title = new Property(11, String.class, "title", false, "TITLE");
+        public final static Property Date_added = new Property(12, long.class, "date_added", false, "DATE_ADDED");
+        public final static Property Date_modified = new Property(13, long.class, "date_modified", false, "DATE_MODIFIED");
+        public final static Property Mime_type = new Property(14, String.class, "mime_type", false, "MIME_TYPE");
     }
 
 
@@ -53,20 +54,21 @@ public class DBSongDao extends AbstractDao<DBSong, Void> {
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"DBSONG\" (" + //
-                "\"DURATION\" INTEGER NOT NULL ," + // 0: duration
-                "\"ARTIST\" TEXT," + // 1: artist
-                "\"PARENT_PATH\" TEXT," + // 2: parent_path
-                "\"ALBUM\" TEXT," + // 3: album
-                "\"ALBUM_ID\" TEXT," + // 4: album_id
-                "\"ALBUM_PATH\" TEXT," + // 5: album_path
-                "\"YEAR\" INTEGER NOT NULL ," + // 6: year
-                "\"DATA\" TEXT," + // 7: data
-                "\"SIZE\" INTEGER NOT NULL ," + // 8: size
-                "\"DISPLAY_NAME\" TEXT," + // 9: display_name
-                "\"TITLE\" TEXT," + // 10: title
-                "\"DATE_ADDED\" INTEGER NOT NULL ," + // 11: date_added
-                "\"DATE_MODIFIED\" INTEGER NOT NULL ," + // 12: date_modified
-                "\"MIME_TYPE\" TEXT);"); // 13: mime_type
+                "\"_id\" INTEGER PRIMARY KEY ," + // 0: id
+                "\"DURATION\" INTEGER NOT NULL ," + // 1: duration
+                "\"ARTIST\" TEXT," + // 2: artist
+                "\"PARENT_PATH\" TEXT," + // 3: parent_path
+                "\"ALBUM\" TEXT," + // 4: album
+                "\"ALBUM_ID\" TEXT," + // 5: album_id
+                "\"ALBUM_PATH\" TEXT," + // 6: album_path
+                "\"YEAR\" INTEGER NOT NULL ," + // 7: year
+                "\"DATA\" TEXT," + // 8: data
+                "\"SIZE\" INTEGER NOT NULL ," + // 9: size
+                "\"DISPLAY_NAME\" TEXT," + // 10: display_name
+                "\"TITLE\" TEXT," + // 11: title
+                "\"DATE_ADDED\" INTEGER NOT NULL ," + // 12: date_added
+                "\"DATE_MODIFIED\" INTEGER NOT NULL ," + // 13: date_modified
+                "\"MIME_TYPE\" TEXT);"); // 14: mime_type
     }
 
     /** Drops the underlying database table. */
@@ -78,172 +80,187 @@ public class DBSongDao extends AbstractDao<DBSong, Void> {
     @Override
     protected final void bindValues(DatabaseStatement stmt, DBSong entity) {
         stmt.clearBindings();
-        stmt.bindLong(1, entity.getDuration());
+ 
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
+        }
+        stmt.bindLong(2, entity.getDuration());
  
         String artist = entity.getArtist();
         if (artist != null) {
-            stmt.bindString(2, artist);
+            stmt.bindString(3, artist);
         }
  
         String parent_path = entity.getParent_path();
         if (parent_path != null) {
-            stmt.bindString(3, parent_path);
+            stmt.bindString(4, parent_path);
         }
  
         String album = entity.getAlbum();
         if (album != null) {
-            stmt.bindString(4, album);
+            stmt.bindString(5, album);
         }
  
         String album_id = entity.getAlbum_id();
         if (album_id != null) {
-            stmt.bindString(5, album_id);
+            stmt.bindString(6, album_id);
         }
  
         String album_path = entity.getAlbum_path();
         if (album_path != null) {
-            stmt.bindString(6, album_path);
+            stmt.bindString(7, album_path);
         }
-        stmt.bindLong(7, entity.getYear());
+        stmt.bindLong(8, entity.getYear());
  
         String data = entity.getData();
         if (data != null) {
-            stmt.bindString(8, data);
+            stmt.bindString(9, data);
         }
-        stmt.bindLong(9, entity.getSize());
+        stmt.bindLong(10, entity.getSize());
  
         String display_name = entity.getDisplay_name();
         if (display_name != null) {
-            stmt.bindString(10, display_name);
+            stmt.bindString(11, display_name);
         }
  
         String title = entity.getTitle();
         if (title != null) {
-            stmt.bindString(11, title);
+            stmt.bindString(12, title);
         }
-        stmt.bindLong(12, entity.getDate_added());
-        stmt.bindLong(13, entity.getDate_modified());
+        stmt.bindLong(13, entity.getDate_added());
+        stmt.bindLong(14, entity.getDate_modified());
  
         String mime_type = entity.getMime_type();
         if (mime_type != null) {
-            stmt.bindString(14, mime_type);
+            stmt.bindString(15, mime_type);
         }
     }
 
     @Override
     protected final void bindValues(SQLiteStatement stmt, DBSong entity) {
         stmt.clearBindings();
-        stmt.bindLong(1, entity.getDuration());
+ 
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
+        }
+        stmt.bindLong(2, entity.getDuration());
  
         String artist = entity.getArtist();
         if (artist != null) {
-            stmt.bindString(2, artist);
+            stmt.bindString(3, artist);
         }
  
         String parent_path = entity.getParent_path();
         if (parent_path != null) {
-            stmt.bindString(3, parent_path);
+            stmt.bindString(4, parent_path);
         }
  
         String album = entity.getAlbum();
         if (album != null) {
-            stmt.bindString(4, album);
+            stmt.bindString(5, album);
         }
  
         String album_id = entity.getAlbum_id();
         if (album_id != null) {
-            stmt.bindString(5, album_id);
+            stmt.bindString(6, album_id);
         }
  
         String album_path = entity.getAlbum_path();
         if (album_path != null) {
-            stmt.bindString(6, album_path);
+            stmt.bindString(7, album_path);
         }
-        stmt.bindLong(7, entity.getYear());
+        stmt.bindLong(8, entity.getYear());
  
         String data = entity.getData();
         if (data != null) {
-            stmt.bindString(8, data);
+            stmt.bindString(9, data);
         }
-        stmt.bindLong(9, entity.getSize());
+        stmt.bindLong(10, entity.getSize());
  
         String display_name = entity.getDisplay_name();
         if (display_name != null) {
-            stmt.bindString(10, display_name);
+            stmt.bindString(11, display_name);
         }
  
         String title = entity.getTitle();
         if (title != null) {
-            stmt.bindString(11, title);
+            stmt.bindString(12, title);
         }
-        stmt.bindLong(12, entity.getDate_added());
-        stmt.bindLong(13, entity.getDate_modified());
+        stmt.bindLong(13, entity.getDate_added());
+        stmt.bindLong(14, entity.getDate_modified());
  
         String mime_type = entity.getMime_type();
         if (mime_type != null) {
-            stmt.bindString(14, mime_type);
+            stmt.bindString(15, mime_type);
         }
     }
 
     @Override
-    public Void readKey(Cursor cursor, int offset) {
-        return null;
+    public Long readKey(Cursor cursor, int offset) {
+        return cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0);
     }    
 
     @Override
     public DBSong readEntity(Cursor cursor, int offset) {
         DBSong entity = new DBSong( //
-            cursor.getLong(offset + 0), // duration
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // artist
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // parent_path
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // album
-            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // album_id
-            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // album_path
-            cursor.getLong(offset + 6), // year
-            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // data
-            cursor.getLong(offset + 8), // size
-            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // display_name
-            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // title
-            cursor.getLong(offset + 11), // date_added
-            cursor.getLong(offset + 12), // date_modified
-            cursor.isNull(offset + 13) ? null : cursor.getString(offset + 13) // mime_type
+            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
+            cursor.getLong(offset + 1), // duration
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // artist
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // parent_path
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // album
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // album_id
+            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // album_path
+            cursor.getLong(offset + 7), // year
+            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // data
+            cursor.getLong(offset + 9), // size
+            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // display_name
+            cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11), // title
+            cursor.getLong(offset + 12), // date_added
+            cursor.getLong(offset + 13), // date_modified
+            cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14) // mime_type
         );
         return entity;
     }
      
     @Override
     public void readEntity(Cursor cursor, DBSong entity, int offset) {
-        entity.setDuration(cursor.getLong(offset + 0));
-        entity.setArtist(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setParent_path(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setAlbum(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setAlbum_id(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
-        entity.setAlbum_path(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
-        entity.setYear(cursor.getLong(offset + 6));
-        entity.setData(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
-        entity.setSize(cursor.getLong(offset + 8));
-        entity.setDisplay_name(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
-        entity.setTitle(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
-        entity.setDate_added(cursor.getLong(offset + 11));
-        entity.setDate_modified(cursor.getLong(offset + 12));
-        entity.setMime_type(cursor.isNull(offset + 13) ? null : cursor.getString(offset + 13));
+        entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
+        entity.setDuration(cursor.getLong(offset + 1));
+        entity.setArtist(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setParent_path(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setAlbum(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setAlbum_id(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setAlbum_path(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
+        entity.setYear(cursor.getLong(offset + 7));
+        entity.setData(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setSize(cursor.getLong(offset + 9));
+        entity.setDisplay_name(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
+        entity.setTitle(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
+        entity.setDate_added(cursor.getLong(offset + 12));
+        entity.setDate_modified(cursor.getLong(offset + 13));
+        entity.setMime_type(cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14));
      }
     
     @Override
-    protected final Void updateKeyAfterInsert(DBSong entity, long rowId) {
-        // Unsupported or missing PK type
-        return null;
+    protected final Long updateKeyAfterInsert(DBSong entity, long rowId) {
+        entity.setId(rowId);
+        return rowId;
     }
     
     @Override
-    public Void getKey(DBSong entity) {
-        return null;
+    public Long getKey(DBSong entity) {
+        if(entity != null) {
+            return entity.getId();
+        } else {
+            return null;
+        }
     }
 
     @Override
     public boolean hasKey(DBSong entity) {
-        // TODO
-        return false;
+        return entity.getId() != null;
     }
 
     @Override

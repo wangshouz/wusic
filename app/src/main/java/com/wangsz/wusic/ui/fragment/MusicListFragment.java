@@ -9,12 +9,11 @@ import android.view.View;
 import com.elvishew.xlog.XLog;
 import com.wangsz.wusic.R;
 import com.wangsz.wusic.base.BaseInterface;
-import com.wangsz.wusic.bean.SongInfo;
 import com.wangsz.wusic.db.model.DBSong;
 import com.wangsz.wusic.manager.MediaManager;
 import com.wangsz.wusic.ui.fragment.base.BaseListFragment;
-import com.wangsz.wusic.utils.PermissionUtil;
-import com.wangsz.wusic.utils.SettingUtil;
+import com.wangsz.libs.utils.PermissionUtil;
+import com.wangsz.libs.utils.SettingUtil;
 import com.wangsz.wusic.viewbinder.SongViewBinder;
 
 import java.util.List;
@@ -52,7 +51,7 @@ public class MusicListFragment extends BaseListFragment {
     @Override
     protected void initAdapterRegister() {
         super.initAdapterRegister();
-        mMultiTypeAdapter.register(SongInfo.class, new SongViewBinder());
+        mMultiTypeAdapter.register(DBSong.class, new SongViewBinder());
     }
 
     @Override
@@ -80,13 +79,12 @@ public class MusicListFragment extends BaseListFragment {
     }
 
     private void getSongs() {
-        mDisposable = Observable.create((ObservableOnSubscribe<List<SongInfo>>) emitter -> {
-            List<SongInfo> list = MediaManager.getInstance().getSongInfoList(mContext);
-            emitter.onNext(list);
-        }).subscribeOn(Schedulers.io())
+        mDisposable = Observable.create((ObservableOnSubscribe<List<DBSong>>) emitter ->
+                emitter.onNext(MediaManager.getInstance().getAllSongs(mContext)))
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(songInfos -> {
-                    mItems.addAll(songInfos);
+                .subscribe(dbSongs -> {
+                    mItems.addAll(dbSongs);
                     handleData();
                 });
     }

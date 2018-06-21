@@ -23,4 +23,5 @@ public class BaseActivity extends AppCompatActivity {
         mView = getWindow().getDecorView();
         mContext = this;
     }
+
 }

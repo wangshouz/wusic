@@ -10,11 +10,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.elvishew.xlog.XLog;
+import com.wangsz.libs.rxbus.RxBus;
 import com.wangsz.wusic.R;
 import com.wangsz.wusic.aidl.Song;
-import com.wangsz.wusic.bean.SongInfo;
-import com.wangsz.wusic.db.model.DBSong;
 import com.wangsz.wusic.constant.Action;
+import com.wangsz.wusic.db.model.DBSong;
+import com.wangsz.wusic.events.SongEvent;
 import com.wangsz.wusic.manager.MusicServiceManager;
 
 import me.drakeet.multitype.ItemViewBinder;
@@ -23,7 +24,7 @@ import me.drakeet.multitype.ItemViewBinder;
  * author: wangsz
  * date: On 2018/6/7 0007
  */
-public class SongViewBinder extends ItemViewBinder<SongInfo, SongViewBinder.ViewHolder> {
+public class SongViewBinder extends ItemViewBinder<DBSong, SongViewBinder.ViewHolder> {
 
     private int position = -1;
 
@@ -35,7 +36,7 @@ public class SongViewBinder extends ItemViewBinder<SongInfo, SongViewBinder.View
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull ViewHolder holder, @NonNull SongInfo song) {
+    protected void onBindViewHolder(@NonNull ViewHolder holder, @NonNull DBSong song) {
 
         holder.tvTitle.setText(song.getTitle());
         holder.tvDesc.setText(String.format("%s-%s", song.getArtist(), song.getAlbum()));
@@ -53,6 +54,9 @@ public class SongViewBinder extends ItemViewBinder<SongInfo, SongViewBinder.View
                     int oldPosition = position;
                     position = holder.getAdapterPosition();
                     MusicServiceManager.getPlayerInterface().action(Action.PLAY, new Song(song.getData()));
+
+                    RxBus.getInstance().send(new SongEvent(song));
+
                     getAdapter().notifyItemChanged(oldPosition);
                     getAdapter().notifyItemChanged(position);
                 } catch (RemoteException e) {

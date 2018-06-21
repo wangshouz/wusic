@@ -6,22 +6,17 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
-import com.alibaba.fastjson.JSON;
 import com.elvishew.xlog.XLog;
-import com.wangsz.wusic.bean.SongInfo;
+import com.wangsz.wusic.db.GreenDaoManager;
 import com.wangsz.wusic.db.model.DBSong;
 
-import org.json.JSONObject;
-
+import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-
-import io.realm.Realm;
 
 public class MediaManager {
 
-    private HashSet<SongInfo> songs;
+    private List<DBSong> mSongs = new ArrayList<>();
 
     private static volatile MediaManager MEDIAMANAGER;
 
@@ -39,26 +34,18 @@ public class MediaManager {
         return MEDIAMANAGER;
     }
 
-    private HashSet<SongInfo> refreshData(Context context) {
-        if (songs == null)
-            songs = new HashSet<>();
-        else {
-            songs.clear();
-        }
+    private List<DBSong> refreshData(Context context) {
+
+        mSongs.clear();
 
         Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null,
                 null, null);
         if (cursor == null) {
-            return songs;
+            return mSongs;
         }
 
-        long time = System.currentTimeMillis();
-        XLog.d("开始插入数据库 ======= ");
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.where(DBSong.class).findAll().deleteAllFromRealm();
         while (cursor.moveToNext()) {
-            SongInfo song = new SongInfo();
+            DBSong song = new DBSong();
             String album_id = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM_ID));
             song.setAlbum_id(album_id);
             song.setAlbum_path(getAlbumArtPicPath(context, album_id));
@@ -73,16 +60,18 @@ public class MediaManager {
             song.setSize(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.SIZE)));
             song.setDate_added(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DATE_ADDED)));
             song.setDate_modified(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DATE_MODIFIED)));
-            XLog.d("song = " + song.getDisplay_name() + ";" + song.getTitle());
-            songs.add(song);
-            realm.createObjectFromJson(DBSong.class, JSON.toJSONString(song));
+            File file = new File(song.getData());
+            song.setParent_path(file.getParent());
+            mSongs.add(song);
         }
         cursor.close();
-        XLog.d("songs = " + songs.size());
-        realm.commitTransaction();
-        realm.close();
-        XLog.d("插入数据库结束 ======= " + (System.currentTimeMillis() - time));
-        return songs;
+        // 先清空数据
+        XLog.d("清空数据库 ======= ");
+        GreenDaoManager.getInstance().getSession().getDBSongDao().deleteAll();
+        XLog.d("开始插入数据库 ======= ");
+        GreenDaoManager.getInstance().getSession().getDBSongDao().insertInTx(mSongs);
+        XLog.d("插入数据库结束 ======= ");
+        return mSongs;
     }
 
     //根据专辑 id 获得专辑图片保存路径
@@ -98,6 +87,7 @@ public class MediaManager {
 
         Cursor cur = context.getContentResolver().query(uri, projection, null, null, null);
         if (cur == null) {
+            XLog.d("cur == null");
             return null;
         }
 
@@ -106,27 +96,21 @@ public class MediaManager {
             imagePath = cur.getString(0);
         }
         cur.close();
-
+//        XLog.d("imagePath = " + imagePath);
 
         return imagePath;
     }
 
     /**
-     * 获取所有歌曲
+     * 获取所有本地歌曲
      *
      * @param context
      * @return
      */
-    public List<SongInfo> getSongInfoList(Context context) {
-        check(context);
-
-        return new ArrayList<>(songs);
-    }
-
-    private void check(Context context) {
-        if (songs == null)
+    public List<DBSong> getAllSongs(Context context) {
+        if (mSongs.isEmpty())
             refreshData(context);
+
+        return mSongs;
     }
-
-
 }

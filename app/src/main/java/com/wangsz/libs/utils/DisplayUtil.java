@@ -1,4 +1,4 @@
-package com.wangsz.wusic.utils;
+package com.wangsz.libs.utils;
 
 import android.content.Context;
 import android.os.Handler;

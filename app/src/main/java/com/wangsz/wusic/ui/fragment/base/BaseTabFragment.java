@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 
 import com.wangsz.wusic.R;
 import com.wangsz.wusic.adapter.TabAdapter;
-import com.wangsz.wusic.utils.DisplayUtil;
+import com.wangsz.libs.utils.DisplayUtil;
 
 import java.util.ArrayList;
 import java.util.List;

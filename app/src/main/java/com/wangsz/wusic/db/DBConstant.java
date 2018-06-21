@@ -6,7 +6,6 @@ package com.wangsz.wusic.db;
  */
 public class DBConstant {
 
-    public static final String DB_NAME = "wusic.realm";
+    public static final String DB_NAME = "wusic.db";
 
-    public static final int DB_VERSION = 0;
 }

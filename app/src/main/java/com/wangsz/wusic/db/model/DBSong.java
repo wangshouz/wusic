@@ -1,15 +1,19 @@
 package com.wangsz.wusic.db.model;
 
-import io.realm.RealmObject;
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Generated;
 
-
-public class DBSong extends RealmObject {
+@Entity
+public class DBSong {
 
     //时间 ms
     private long duration;
 
     //艺术家
     private String artist;
+
+    //所属文件夹
+    private String parent_path;
 
     //所属专辑
     private String album;
@@ -44,6 +48,31 @@ public class DBSong extends RealmObject {
     //MIME type
     private String mime_type;
 
+    @Generated(hash = 1191339526)
+    public DBSong(long duration, String artist, String parent_path, String album,
+            String album_id, String album_path, long year, String data, long size,
+            String display_name, String title, long date_added, long date_modified,
+            String mime_type) {
+        this.duration = duration;
+        this.artist = artist;
+        this.parent_path = parent_path;
+        this.album = album;
+        this.album_id = album_id;
+        this.album_path = album_path;
+        this.year = year;
+        this.data = data;
+        this.size = size;
+        this.display_name = display_name;
+        this.title = title;
+        this.date_added = date_added;
+        this.date_modified = date_modified;
+        this.mime_type = mime_type;
+    }
+
+    @Generated(hash = 1058323443)
+    public DBSong() {
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -58,25 +87,6 @@ public class DBSong extends RealmObject {
     @Override
     public int hashCode() {
         return data.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return "DBSong{" +
-                "duration=" + duration +
-                ", artist='" + artist + '\'' +
-                ", album='" + album + '\'' +
-                ", album_id='" + album_id + '\'' +
-                ", album_path='" + album_path + '\'' +
-                ", year=" + year +
-                ", data='" + data + '\'' +
-                ", size=" + size +
-                ", display_name='" + display_name + '\'' +
-                ", title='" + title + '\'' +
-                ", date_added=" + date_added +
-                ", date_modified=" + date_modified +
-                ", mime_type='" + mime_type + '\'' +
-                '}' + "\n";
     }
 
     public void setAlbum_id(String album_id) {
@@ -187,4 +197,11 @@ public class DBSong extends RealmObject {
         return album_path;
     }
 
+    public String getParent_path() {
+        return parent_path;
+    }
+
+    public void setParent_path(String parent_path) {
+        this.parent_path = parent_path;
+    }
 }

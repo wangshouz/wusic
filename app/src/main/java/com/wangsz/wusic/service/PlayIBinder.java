@@ -1,12 +1,11 @@
 package com.wangsz.wusic.service;
 
-import android.media.MediaPlayer;
-import android.os.RemoteException;
 import android.util.Log;
 
 import com.wangsz.wusic.aidl.IPlayerInterface;
 import com.wangsz.wusic.aidl.Song;
 import com.wangsz.wusic.constant.Action;
+import com.wangsz.wusic.manager.MediaPlayerManager;
 
 import java.io.IOException;
 
@@ -18,7 +17,7 @@ public class PlayIBinder extends IPlayerInterface.Stub {
 
     private static final String TAG = PlayIBinder.class.getName();
 
-    private static MediaPlayer mMediaPlayer = new MediaPlayer();
+//    private static MediaPlayer mMediaPlayer = new MediaPlayer();
 
     private Song mCurrentSong;
 
@@ -49,23 +48,21 @@ public class PlayIBinder extends IPlayerInterface.Stub {
         mCurrentSong = song;
 
         try {
-            mMediaPlayer.setOnPreparedListener(MediaPlayer::start);
-            mMediaPlayer.reset();
-            mMediaPlayer.setDataSource(song.path);
-            mMediaPlayer.prepareAsync();
+            MediaPlayerManager.getInstance().get().reset();
+            MediaPlayerManager.getInstance().get().setDataSource(song.path);
+            MediaPlayerManager.getInstance().get().prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     // 暂停或播放
     private void pause() {
 
-        if (mMediaPlayer.isPlaying())
-            mMediaPlayer.pause();
+        if (MediaPlayerManager.getInstance().get().isPlaying())
+            MediaPlayerManager.getInstance().get().pause();
         else
-            mMediaPlayer.start();
+            MediaPlayerManager.getInstance().get().start();
 
     }
 }

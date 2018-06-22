@@ -1,6 +1,5 @@
 package com.wangsz.wusic.viewbinder;
 
-import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,15 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.elvishew.xlog.XLog;
-import com.wangsz.greendao.gen.DBSongDao;
-import com.wangsz.libs.rxbus.RxBus;
 import com.wangsz.wusic.R;
-import com.wangsz.wusic.aidl.Song;
-import com.wangsz.wusic.constant.Action;
-import com.wangsz.wusic.db.GreenDaoManager;
 import com.wangsz.wusic.db.model.DBSong;
-import com.wangsz.wusic.events.SongEvent;
-import com.wangsz.wusic.manager.MusicServiceManager;
+import com.wangsz.wusic.manager.SongControl;
 
 import me.drakeet.multitype.ItemViewBinder;
 
@@ -29,6 +22,21 @@ import me.drakeet.multitype.ItemViewBinder;
 public class SongViewBinder extends ItemViewBinder<DBSong, SongViewBinder.ViewHolder> {
 
     private int position = -1;
+
+    /**
+     * 更新播放列表
+     */
+    public void setSongList() {
+
+    }
+
+    public void resetPosition(int pos) {
+        int oldPosition = position;
+        this.position = pos;
+        getAdapter().notifyItemChanged(oldPosition);
+        if (position > 0)
+            getAdapter().notifyItemChanged(position);
+    }
 
     @NonNull
     @Override
@@ -52,28 +60,13 @@ public class SongViewBinder extends ItemViewBinder<DBSong, SongViewBinder.ViewHo
         } else {
             holder.ivVolume.setVisibility(View.GONE);
             holder.itemView.setOnClickListener(v -> {
-                try {
-                    int oldPosition = position;
-                    position = holder.getAdapterPosition();
-                    // 播放音乐
-                    MusicServiceManager.getPlayerInterface().action(Action.PLAY, new Song(song.getData()));
-                    // 发送消息更新底部播放UI
-                    RxBus.getInstance().send(new SongEvent(song));
-                    // 更新列表UI
-                    getAdapter().notifyItemChanged(oldPosition);
-                    getAdapter().notifyItemChanged(position);
-                    // 存下最近播放
-                    song.setDate_modified(System.currentTimeMillis());
-                    DBSong dbSong = GreenDaoManager.getInstance().getSession().getDBSongDao().queryBuilder().where(DBSongDao.Properties.Data.eq(song.getData())).unique();
-                    if (dbSong != null) {
-                        dbSong.setDate_modified(System.currentTimeMillis());
-                        GreenDaoManager.getInstance().getSession().getDBSongDao().update(dbSong);
-                    } else {
-                        GreenDaoManager.getInstance().getSession().getDBSongDao().insert(song);
-                    }
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+                setSongList();
+                int oldPosition = position;
+                position = holder.getAdapterPosition();
+                SongControl.getInstance().play(song);
+                // 更新列表UI
+                getAdapter().notifyItemChanged(oldPosition);
+                getAdapter().notifyItemChanged(position);
             });
         }
     }

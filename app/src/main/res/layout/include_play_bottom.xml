@@ -30,8 +30,12 @@
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
         android:layout_marginTop="10dp"
         android:layout_toEndOf="@id/iv_cover"
+        android:layout_toStartOf="@+id/playView"
+        android:ellipsize="marquee"
+        android:singleLine="true"
         android:textColor="@color/textColorA"
         android:textSize="@dimen/text_normal"
         tools:text="七里香" />
@@ -49,10 +53,19 @@
 
     <com.wangsz.libs.widgets.PlayView
         android:id="@+id/playView"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="15dp"
+        android:layout_toStartOf="@+id/iv_playlist"
+        android:background="@color/white" />
+
+    <ImageView
+        android:id="@+id/iv_playlist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:background="@color/white" />
+        android:src="@drawable/ic_play_list" />
 
 </RelativeLayout>

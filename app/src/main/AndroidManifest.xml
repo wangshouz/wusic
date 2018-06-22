@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
 
     <!-- LeanCloud基础模块（必须加入以下声明）START -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -27,6 +28,12 @@
             android:enabled="true"
             android:exported="true"
             android:process=":music" />
+
+        <receiver android:name=".manager.PlayBroadcastReceiver">
+            <intent-filter>
+                <action android:name="com.wangsz.wusic.playaction"/>
+            </intent-filter>
+        </receiver>
 
         <!-- 启动页-->
         <activity

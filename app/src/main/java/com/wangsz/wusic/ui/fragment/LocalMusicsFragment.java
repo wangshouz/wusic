@@ -86,7 +86,10 @@ public class LocalMusicsFragment extends BaseListFragment {
             mPlayView.initAnim(songEvent.song.getDuration());
             mPlayView.setOnClickPlayListener(() -> SongControl.getInstance().pause(songEvent.song));
 
-            mSongViewBinder.resetPosition(mItems.indexOf(songEvent.song));
+            int index = mItems.indexOf(songEvent.song);
+            mSongViewBinder.resetPosition(index);
+            mRecyclerView.scrollToPosition(index - 3);
+
         }));
 
         DividerItemDecoration decoration = new DividerItemDecoration(Objects.requireNonNull(mContext), DividerItemDecoration.VERTICAL);

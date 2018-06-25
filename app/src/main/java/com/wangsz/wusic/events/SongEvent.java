@@ -1,5 +1,6 @@
 package com.wangsz.wusic.events;
 
+import com.wangsz.wusic.constant.Action;
 import com.wangsz.wusic.db.model.DBSong;
 
 /**
@@ -10,7 +11,15 @@ public class SongEvent {
 
     public DBSong song;
 
+    public int action;
+
     public SongEvent(DBSong song) {
         this.song = song;
+        this.action = Action.PLAY;
+    }
+
+    public SongEvent(DBSong song,int action) {
+        this.song = song;
+        this.action = action;
     }
 }

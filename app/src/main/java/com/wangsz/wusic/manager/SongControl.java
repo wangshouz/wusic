@@ -11,6 +11,7 @@ import com.wangsz.wusic.db.GreenDaoManager;
 import com.wangsz.wusic.db.model.DBSong;
 import com.wangsz.wusic.events.SongEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -33,7 +34,11 @@ public class SongControl {
     }
 
     public void setSongList(List<DBSong> list) {
-        this.mSongList = list;
+        this.mSongList = new ArrayList<>(list);
+    }
+
+    public List<DBSong> getSongList() {
+        return mSongList;
     }
 
     public DBSong getCurrentSong() {
@@ -68,13 +73,75 @@ public class SongControl {
         }
     }
 
+    public void stop(DBSong dbSong) {
+        try {
+            MusicServiceManager.getPlayerInterface().action(Action.STOP, new Song(dbSong.getData()));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void next() {
 
         if (mSongList == null || mSongList.isEmpty()) return;
 
-        int pos = new Random().nextInt(mSongList.size());
-        XLog.d("next = " + pos);
-        play(mSongList.get(pos));
+        switch (mDefaultStyle) {
+            // 列表播放
+            case 0:
+                int pos = (mSongList.indexOf(mCurrentSong) + 1) % mSongList.size();
+                XLog.d("next = " + pos);
+                play(mSongList.get(pos));
+                break;
+            // 随机
+            case 1:
+                int pos1 = new Random().nextInt(mSongList.size());
+
+                while (mCurrentSong == mSongList.get(pos1)) {
+                    pos1 = new Random().nextInt(mSongList.size());
+                }
+                XLog.d("next = " + pos1);
+                play(mSongList.get(pos1));
+                break;
+            case 2:
+                play(mCurrentSong);
+                break;
+        }
     }
 
+    public void delete(int index) {
+
+        if (mSongList == null || mSongList.isEmpty()) return;
+
+        if (mCurrentSong == mSongList.get(index)) {
+            if (mDefaultStyle == 2) {
+                int pos = (mSongList.indexOf(mCurrentSong) + 1) % mSongList.size();
+                mCurrentSong = mSongList.get(pos);
+            }
+            next();
+        }
+
+        mSongList.remove(index);
+
+    }
+
+    public void deleteAll() {
+
+        stop(mCurrentSong);
+
+        mSongList.clear();
+        mCurrentSong = null;
+
+    }
+
+    private String[] mStyles = {"列表播放", "随机播放", "单曲循环"};
+    private int mDefaultStyle = 0;
+
+    public String getStyle() {
+        return mStyles[mDefaultStyle];
+    }
+
+    public String setStyle() {
+        mDefaultStyle = (mDefaultStyle + 1) % mStyles.length;
+        return mStyles[mDefaultStyle];
+    }
 }

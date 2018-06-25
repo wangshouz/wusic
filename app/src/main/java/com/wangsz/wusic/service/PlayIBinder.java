@@ -1,11 +1,14 @@
 package com.wangsz.wusic.service;
 
+import android.content.Intent;
 import android.util.Log;
 
 import com.wangsz.wusic.aidl.IPlayerInterface;
 import com.wangsz.wusic.aidl.Song;
+import com.wangsz.wusic.application.App;
 import com.wangsz.wusic.constant.Action;
 import com.wangsz.wusic.manager.MediaPlayerManager;
+import com.wangsz.wusic.manager.PlayBroadcastReceiver;
 
 import java.io.IOException;
 
@@ -34,6 +37,7 @@ public class PlayIBinder extends IPlayerInterface.Stub {
                 break;
             case Action.STOP:
                 Log.d(TAG, "service onBind : STOP");
+                stop();
                 break;
         }
     }
@@ -64,5 +68,14 @@ public class PlayIBinder extends IPlayerInterface.Stub {
         else
             MediaPlayerManager.getInstance().get().start();
 
+    }
+
+    // 暂停或播放
+    private void stop() {
+
+        MediaPlayerManager.getInstance().get().stop();
+        Intent intent = new Intent(PlayBroadcastReceiver.PLAY_ACTION);
+        intent.putExtra(PlayBroadcastReceiver.PLAY_ACTION_VALUE, Action.STOP);
+        App.getInstance().sendBroadcast(intent);
     }
 }

@@ -5,6 +5,7 @@ import android.media.MediaPlayer;
 
 import com.elvishew.xlog.XLog;
 import com.wangsz.wusic.application.App;
+import com.wangsz.wusic.constant.Action;
 
 public class MediaPlayerManager {
 
@@ -15,7 +16,9 @@ public class MediaPlayerManager {
         mMediaPlayer.setOnPreparedListener(MediaPlayer::start);
         mMediaPlayer.setOnCompletionListener(mp -> {
             XLog.d("mMediaPlayer.setOnCompletionListener");
-            App.getInstance().sendBroadcast(new Intent(PlayBroadcastReceiver.PLAY_ACTION));
+            Intent intent = new Intent(PlayBroadcastReceiver.PLAY_ACTION);
+            intent.putExtra(PlayBroadcastReceiver.PLAY_ACTION_VALUE, Action.COMPLETION);
+            App.getInstance().sendBroadcast(intent);
         });
     }
 

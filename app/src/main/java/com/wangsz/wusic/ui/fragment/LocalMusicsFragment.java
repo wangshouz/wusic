@@ -4,16 +4,14 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.view.View;
 import android.view.ViewStub;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.wangsz.libs.imageloader.MyImageLoader;
 import com.wangsz.libs.rxbus.RxBus;
 import com.wangsz.libs.utils.PermissionUtil;
 import com.wangsz.libs.utils.SettingUtil;
-import com.wangsz.libs.widgets.PlayView;
+import com.wangsz.libs.widgets.PlayBottomView;
 import com.wangsz.wusic.R;
 import com.wangsz.wusic.base.BaseInterface;
+import com.wangsz.wusic.constant.Action;
 import com.wangsz.wusic.db.model.DBSong;
 import com.wangsz.wusic.events.SongEvent;
 import com.wangsz.wusic.manager.MediaManager;
@@ -41,11 +39,7 @@ public class LocalMusicsFragment extends BaseListFragment {
     private SongViewBinder mSongViewBinder;
 
     ViewStub mViewStub;
-    View mViewBottom;
-    ImageView mIvAlbum;
-    TextView mTvTitle;
-    TextView mTvArtist;
-    PlayView mPlayView;
+    private PlayBottomView mPlayBottomView;
 
     private List<DBSong> mSongs;
 
@@ -72,19 +66,18 @@ public class LocalMusicsFragment extends BaseListFragment {
         super.init();
         mViewStub = mView.findViewById(R.id.viewstub);
         mDisposable.add(RxBus.getInstance().toFlowable(SongEvent.class).subscribe(songEvent -> {
-            if (mViewBottom == null) {
-                mViewBottom = mViewStub.inflate();
-                mIvAlbum = mViewBottom.findViewById(R.id.iv_cover);
-                mTvTitle = mViewBottom.findViewById(R.id.tv_title);
-                mTvArtist = mViewBottom.findViewById(R.id.tv_artist);
-                mPlayView = mViewBottom.findViewById(R.id.playView);
-                mViewBottom.setVisibility(View.VISIBLE);
+
+            if (songEvent.action == Action.STOP) {
+                if (mPlayBottomView != null) mPlayBottomView.setVisibility(View.GONE);
+                mSongViewBinder.resetPosition(-1);
+                return;
             }
-            MyImageLoader.diaplayAlbum("file://" + songEvent.song.getAlbum_path(), mIvAlbum);
-            mTvTitle.setText(songEvent.song.getTitle());
-            mTvArtist.setText(songEvent.song.getArtist());
-            mPlayView.initAnim(songEvent.song.getDuration());
-            mPlayView.setOnClickPlayListener(() -> SongControl.getInstance().pause(songEvent.song));
+
+            if (mPlayBottomView == null) {
+                mPlayBottomView = new PlayBottomView(mContext, mViewStub.inflate());
+            }
+            mPlayBottomView.updataView(songEvent.song);
+            mPlayBottomView.setVisibility(View.VISIBLE);
 
             int index = mItems.indexOf(songEvent.song);
             mSongViewBinder.resetPosition(index);

@@ -6,12 +6,20 @@
     android:layout_gravity="bottom"
     android:orientation="vertical">
 
-    <include
-        android:id="@+id/frament_content"
-        layout="@layout/fragment_list"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/refresh"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1">
+
+        <include
+            android:id="@+id/frament_content"
+            layout="@layout/fragment_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 
     <ViewStub
         android:id="@+id/viewstub"

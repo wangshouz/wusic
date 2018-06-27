@@ -1,5 +1,6 @@
 package com.wangsz.wusic.ui.fragment;
 
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.view.View;
@@ -24,6 +25,7 @@ import java.util.Objects;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -38,6 +40,7 @@ public class LocalMusicsFragment extends BaseListFragment {
     private CompositeDisposable mDisposable = new CompositeDisposable();
     private SongViewBinder mSongViewBinder;
 
+    private SwipeRefreshLayout mRefreshLayout;
     ViewStub mViewStub;
     private PlayBottomView mPlayBottomView;
 
@@ -51,7 +54,7 @@ public class LocalMusicsFragment extends BaseListFragment {
     @Override
     protected void initAdapterRegister() {
         super.initAdapterRegister();
-        mSongViewBinder = new SongViewBinder() {
+        mSongViewBinder = new SongViewBinder(mContext, getChildFragmentManager()) {
             @Override
             public void setSongList() {
                 super.setSongList();
@@ -64,6 +67,11 @@ public class LocalMusicsFragment extends BaseListFragment {
     @Override
     protected void init() {
         super.init();
+
+        mRefreshLayout = mView.findViewById(R.id.refresh);
+        mRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+        mRefreshLayout.setOnRefreshListener(this::loadData);
+
         mViewStub = mView.findViewById(R.id.viewstub);
         mDisposable.add(RxBus.getInstance().toFlowable(SongEvent.class).subscribe(songEvent -> {
 
@@ -81,7 +89,6 @@ public class LocalMusicsFragment extends BaseListFragment {
 
             int index = mItems.indexOf(songEvent.song);
             mSongViewBinder.resetPosition(index);
-            mRecyclerView.scrollToPosition(index - 3);
 
         }));
 
@@ -112,18 +119,39 @@ public class LocalMusicsFragment extends BaseListFragment {
     }
 
     private void getSongs() {
-        Disposable disposable;
-        disposable = Observable.create((ObservableOnSubscribe<List<DBSong>>) emitter ->
-                emitter.onNext(MediaManager.getInstance().getAllSongs(mContext)))
-                .subscribeOn(Schedulers.io())
+        mRefreshLayout.setRefreshing(true);
+        Observable.create((ObservableOnSubscribe<List<DBSong>>) emitter -> {
+            try {
+                emitter.onNext(MediaManager.getInstance().getAllSongs(mContext));
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+        }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(dbSongs -> {
-                    mSongs = dbSongs;
-                    mItems.clear();
-                    mItems.addAll(dbSongs);
-                    handleData();
+                .subscribe(new Observer<List<DBSong>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        mDisposable.add(d);
+                    }
+
+                    @Override
+                    public void onNext(List<DBSong> dbSongs) {
+                        mRefreshLayout.setRefreshing(false);
+                        mSongs = dbSongs;
+                        mItems.clear();
+                        mItems.addAll(dbSongs);
+                        handleData();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mRefreshLayout.setRefreshing(false);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                    }
                 });
-        mDisposable.add(disposable);
     }
 
     @Override

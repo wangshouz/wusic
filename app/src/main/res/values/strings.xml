@@ -16,4 +16,7 @@
     <string name="sheet">我的歌单</string>
     <string name="song">单曲</string>
     <string name="empty_tips">暂无内容</string>
+    <string name="add_sheet">加入歌单</string>
+    <string name="set_ring">设为铃声</string>
+    <string name="song_detail">歌曲信息</string>
 </resources>

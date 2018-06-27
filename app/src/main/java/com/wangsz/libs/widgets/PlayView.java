@@ -34,6 +34,8 @@ public class PlayView extends FrameLayout implements View.OnClickListener {
     private Paint mPaint = new Paint();
     private int mIntPaintWidth = 4;
 
+    private boolean mIsDestroy = false;
+
     private Bitmap mBitmapPlay;
     private Bitmap mBitmapPause;
 
@@ -97,6 +99,7 @@ public class PlayView extends FrameLayout implements View.OnClickListener {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        if (mIsDestroy) return;
         if (mRadius == 0) {
             mRadius = Math.min(getHeight(), getWidth()) / 2 - mIntPaintWidth / 2;
             x = getWidth() / 2;
@@ -164,6 +167,8 @@ public class PlayView extends FrameLayout implements View.OnClickListener {
         }
         mBitmapPause.recycle();
         mBitmapPlay.recycle();
+
+        mIsDestroy = true;
     }
 
     public interface OnClickPlayListener {

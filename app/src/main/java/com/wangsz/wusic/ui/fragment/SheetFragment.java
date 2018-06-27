@@ -8,7 +8,7 @@ import com.wangsz.wusic.viewbinder.EmptyViewBinder;
  * author: wangsz
  * date: On 2018/6/6 0006
  */
-public class RecommendFragment extends BaseListFragment {
+public class SheetFragment extends BaseListFragment {
 
     @Override
     public void initAdapterRegister() {

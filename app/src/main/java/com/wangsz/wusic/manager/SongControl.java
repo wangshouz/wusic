@@ -3,12 +3,13 @@ package com.wangsz.wusic.manager;
 import android.os.RemoteException;
 
 import com.elvishew.xlog.XLog;
-import com.wangsz.greendao.gen.DBSongDao;
+import com.wangsz.greendao.gen.RecentlySongDao;
 import com.wangsz.libs.rxbus.RxBus;
 import com.wangsz.wusic.aidl.Song;
 import com.wangsz.wusic.constant.Action;
 import com.wangsz.wusic.db.GreenDaoManager;
 import com.wangsz.wusic.db.model.DBSong;
+import com.wangsz.wusic.db.model.RecentlySong;
 import com.wangsz.wusic.events.SongEvent;
 
 import java.util.ArrayList;
@@ -55,13 +56,21 @@ public class SongControl {
             e.printStackTrace();
         }
         // 存下最近播放
-        DBSong song = GreenDaoManager.getInstance().getSession().getDBSongDao().queryBuilder().where(DBSongDao.Properties.Data.eq(dbSong.getData())).unique();
-        if (song != null) {
-            song.setDate_modified(System.currentTimeMillis());
-            GreenDaoManager.getInstance().getSession().getDBSongDao().update(song);
+        List<RecentlySong> recentlySongs = GreenDaoManager.getInstance()
+                .getSession()
+                .getRecentlySongDao()
+                .queryBuilder()
+                .where(RecentlySongDao.Properties.Data.eq(dbSong.getData()))
+                .list();
+        if (recentlySongs != null && !recentlySongs.isEmpty()) {
+            recentlySongs.get(0).setDate_modified(System.currentTimeMillis());
+            GreenDaoManager.getInstance().getSession().getRecentlySongDao().update(recentlySongs.get(0));
         } else {
-            dbSong.setDate_modified(System.currentTimeMillis());
-            GreenDaoManager.getInstance().getSession().getDBSongDao().insert(dbSong);
+            RecentlySong recentlySong = new RecentlySong();
+            recentlySong.setData(dbSong.getData());
+            recentlySong.setDate_added(System.currentTimeMillis());
+            recentlySong.setDate_modified(System.currentTimeMillis());
+            GreenDaoManager.getInstance().getSession().getRecentlySongDao().insert(recentlySong);
         }
     }
 

@@ -16,7 +16,7 @@ import com.wangsz.wusic.R;
 import com.wangsz.wusic.adapter.MainAdapter;
 import com.wangsz.wusic.ui.fragment.LocalMusicsFragment;
 import com.wangsz.wusic.ui.fragment.RecommendFragment;
-import com.wangsz.wusic.ui.fragment.TestFragment;
+import com.wangsz.wusic.ui.fragment.SheetFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,11 +40,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mBottomNavigationViewEx.setItemIconTintList(null);
         mBottomNavigationViewEx.setLargeTextSize(10);
 
-        mFragments.add(new RecommendFragment());
         mFragments.add(new LocalMusicsFragment());
-        mFragments.add(new TestFragment());
+        mFragments.add(new SheetFragment());
+        mFragments.add(new RecommendFragment());
         mViewPager = findViewById(R.id.viewPager);
         mViewPager.setAdapter(new MainAdapter(getSupportFragmentManager(), mFragments));
+        mViewPager.setOffscreenPageLimit(2);
         mBottomNavigationViewEx.setupWithViewPager(mViewPager);
 
         mToolbar = findViewById(R.id.toolbar);

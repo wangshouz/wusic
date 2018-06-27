@@ -2,14 +2,13 @@ package com.wangsz.wusic.application;
 
 import android.app.Application;
 
-import com.avos.avoscloud.AVOSCloud;
 import com.elvishew.xlog.LogConfiguration;
 import com.elvishew.xlog.LogLevel;
 import com.elvishew.xlog.XLog;
+import com.squareup.leakcanary.LeakCanary;
 import com.wangsz.wusic.BuildConfig;
 import com.wangsz.wusic.db.GreenDaoManager;
 import com.wangsz.wusic.manager.MusicServiceManager;
-import com.wangsz.libs.utils.PropertiesUtil;
 
 
 /**
@@ -24,6 +23,8 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
+        LeakCanary.install(this);
+
         sApplication = this;
 
         initLog();
@@ -34,10 +35,6 @@ public class App extends Application {
             initDB();
 
             MusicServiceManager.init(sApplication);
-            // 在assets文件夹中创建appkey.properties文件
-            // LeanCloud初始化,参数依次为 this, AppId, AppKey
-            AVOSCloud.initialize(this, PropertiesUtil.load("leancloud_appid"), PropertiesUtil.load("leancloud_appkey"));
-            AVOSCloud.setDebugLogEnabled(BuildConfig.DEBUG);
         }
 
     }

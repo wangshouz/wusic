@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/add_sheet"
+        android:title="@string/add_sheet" />
+    <item
+        android:id="@+id/set_ring"
+        android:title="@string/set_ring" />
+    <item
+        android:id="@+id/song_detail"
+        android:title="@string/song_detail" />
+</menu>

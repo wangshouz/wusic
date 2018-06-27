@@ -64,15 +64,15 @@ dependencies {
         exclude group: 'com.android.support'
     })
     implementation 'com.github.ittianyu:BottomNavigationViewEx:1.2.4'
-    // LeanCloud 基础包
-    implementation('cn.leancloud.android:avoscloud-sdk:v4.6.4')
     implementation 'com.elvishew:xlog:1.4.0'
 
     implementation 'org.greenrobot:greendao:3.2.2' // add library
     implementation 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v2.0.3'
 
-    implementation 'com.alibaba:fastjson:1.2.37.android'
-    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.alibaba:fastjson:1.2.47'
+    implementation('com.squareup.picasso:picasso:2.71828', {
+        exclude group: 'com.android.support'
+    })
 
     //leakcanary内存泄漏检测
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
